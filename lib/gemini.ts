@@ -32,3 +32,9 @@ export async function analyzeWithGemini(
     return `Could not analyze for ${analysisType}`;
   }
 }
+    }
+  }
+
+console.error("All Gemini model attempts failed:", lastError);
+throw new Error(lastError?.message || `Could not analyze for ${analysisType}`);
+}
