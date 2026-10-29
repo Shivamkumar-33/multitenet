@@ -29,7 +29,7 @@ CREATE POLICY "Allow postgres full access on organization_members"
   USING (true)
   WITH CHECK (true);
 
--- users
+-- users data
 ALTER TABLE "users" ENABLE ROW LEVEL SECURITY;
 ALTER TABLE "users" FORCE ROW LEVEL SECURITY;
 
@@ -40,7 +40,7 @@ CREATE POLICY "Allow postgres full access on users"
   USING (true)
   WITH CHECK (true);
 
--- documents
+-- documents data
 ALTER TABLE "documents" ENABLE ROW LEVEL SECURITY;
 ALTER TABLE "documents" FORCE ROW LEVEL SECURITY;
 
