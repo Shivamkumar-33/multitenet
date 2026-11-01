@@ -2,7 +2,7 @@
 -- FIX 1: Enable Row Level Security (RLS) on all public tables
 -- ============================================================
 -- Since this app uses Prisma (connecting as the `postgres` role),
--- we enable RLS and grant the postgres role full access.
+
 -- The `anon` and `authenticated` Supabase roles are denied by
 -- default (no policy = deny), protecting against direct API abuse.
 -- ============================================================
