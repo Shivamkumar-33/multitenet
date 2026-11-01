@@ -6,7 +6,7 @@
 -- The `anon` and `authenticated` Supabase roles are denied by
 -- default (no policy = deny), protecting against direct API abuse.
 -- ============================================================
-
+-- we enable RLS and grant the postgres role full access.
 -- organizations
 ALTER TABLE "organizations" ENABLE ROW LEVEL SECURITY;
 ALTER TABLE "organizations" FORCE ROW LEVEL SECURITY;
