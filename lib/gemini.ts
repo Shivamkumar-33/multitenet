@@ -8,33 +8,37 @@ const genAI = new GoogleGenerativeAI(apiKey);
 
 export async function analyzeWithGemini(
   text: string,
-  analysisType: "summary" | "qa" | "sentiment" | "entities" | "extract",
+  analysisType: "summary" | "qa" | "sentiment" | "entities" | "extract" = "summary",
 ) {
-  try {
-    // Use the basic model
-    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+  const models = ["gemini-1.5-flash", "gemini-2.0-flash", "gemini-1.5-pro"];
 
-    const prompts = {
-      summary: `Please provide a comprehensive summary of the following document. Include main points, key findings, and conclusions:\n\n${text}`,
-      qa: `Based on the following document, generate 5 important questions and their answers:\n\n${text}`,
-      sentiment: `Analyze the sentiment and tone of the following document. Provide overall sentiment (positive/negative/neutral) and key emotional tones detected:\n\n${text}`,
-      entities: `Extract all named entities (people, organizations, locations, dates, etc.) from the following document:\n\n${text}`,
-      extract: `Extract key information from the following document in structured format:\n\n${text}`,
-    };
+  const prompts: Record<string, string> = {
+    summary: `Please provide a comprehensive summary of the following document. Include main points, key findings, and conclusions:\n\n${text}`,
+    qa: `Based on the following document, generate 5 important questions and their answers:\n\n${text}`,
+    sentiment: `Analyze the sentiment and tone of the following document. Provide overall sentiment (positive/negative/neutral) and key emotional tones detected:\n\n${text}`,
+    entities: `Extract all named entities (people, organizations, locations, dates, etc.) from the following document:\n\n${text}`,
+    extract: `Extract key information from the following document in structured format:\n\n${text}`,
+  };
 
-    const prompt = prompts[analysisType];
-    const result = await model.generateContent(prompt);
-    const response = result.response;
+  const prompt = prompts[analysisType] || prompts.summary;
+  let lastError: unknown;
 
-    return response.text();
-  } catch (error) {
-    console.log("Gemini error:", error);
-    return `Could not analyze for ${analysisType}`;
-  }
-}
+  for (const modelName of models) {
+    try {
+      const model = genAI.getGenerativeModel({ model: modelName });
+      const result = await model.generateContent(prompt);
+      const response = result.response;
+      return response.text();
+    } catch (error) {
+      lastError = error;
+      console.warn(`Gemini model ${modelName} failed, trying fallback:`, error);
     }
   }
 
-console.error("All Gemini model attempts failed:", lastError);
-throw new Error(lastError?.message || `Could not analyze for ${analysisType}`);
+  console.error("All Gemini model attempts failed:", lastError);
+  throw new Error(
+    lastError instanceof Error
+      ? lastError.message
+      : `Could not analyze for ${analysisType}`
+  );
 }

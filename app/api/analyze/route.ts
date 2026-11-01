@@ -51,8 +51,10 @@ export async function POST(request: Request) {
       );
     }
 
-    // 5. Run ONE analysis (summary only for simplicity)
-    const summary = await analyzeWithGemini(content, analysisType);
+    // 5. Run analysis with safe fallback
+    const validAnalysisTypes = ["summary", "qa", "sentiment", "entities", "extract"] as const;
+    const resolvedType = validAnalysisTypes.includes(analysisType) ? analysisType : "summary";
+    const summary = await analyzeWithGemini(content, resolvedType);
 
     // 6. Save result
     const updatedDocument = await prisma.document.update({
